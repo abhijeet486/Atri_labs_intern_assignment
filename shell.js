@@ -6,6 +6,7 @@ const child = require('child_process');
 let exitfromshell = false;
 
 while(!exitfromshell){
+    console.log("Parent["+process.pid+"]");
     const cmd = prompt(process.cwd() + ':Shell> ');
     // console.log(`\nExecuting ${cmd} ...`);
     var commands = cmd.split(" ").filter(element=>element);
@@ -42,18 +43,21 @@ while(!exitfromshell){
             console.log("Child process created with PID["+wp.pid+"]");
             process.on('SIGINT',function(){
                 console.log('SIGINT');
-                process.kill(wp.pid, 'SIGINT');
-            })
+                console.log(process.pid,wp.pid);
+                wp.kill('SIGINT');
+                // process.kill(process.pid, 'SIGINT');
+            });
             // var wp = child.fork(commands[0],commands.slice(1,));
             wp.on('spawn',function(){
                 console.log('Child process['+wp.pid+']');
             });
-            wp.stdout.on('data', function (data) {  
-                console.log('stdout: ' + data);  
-            });  
-            wp.stderr.on('data', function (data) {  
-                console.log('stderr: ' + data);  
-            });  
+            // wp.stdout.on('data', function (data) {  
+            //     console.log('stdout: ' + data); 
+            // });
+            // wp.stdin.write(cmd);
+            // wp.stderr.on('data', function (data) {  
+            //     console.log('stderr: ' + data);  
+            // });  
             wp.on('close', function (code,signal) {  
                 console.log('exited with code: ' + code + ' signal: '+signal);  
             });
